@@ -165,6 +165,6 @@
 
 
 
-Observação
+#Observação
     ':' -> data binding do evento da fonte de dados para a view
     '@' -> data binding do evento da view para fonte de dados
