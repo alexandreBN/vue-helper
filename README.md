@@ -166,3 +166,121 @@
 # Observação
     ':' -> data binding do evento da fonte de dados para a view
     '@' -> data binding do evento da view para fonte de dados
+
+# Single Page Application
+    Aplicações de uma única página que não recarregam no seu uso
+
+# Router
+    Vue Router
+        npm install vue-router@2.1.1 --save
+    
+    Adicionar o novo modulo no main.js
+        import Vue from 'vue';
+        import VueRouter from 'vue-router';
+        Vue.use(VueRouter);
+    
+    Constroi um arquivo routes.js no src/
+        import Cadastro from './components/cadastro/Cadastro.vue';
+        import Home from './components/home/Home.vue';
+
+        export const routes = [
+            {
+                path: '',
+                component: Home
+            },
+            {
+                path: '/cadastro',
+                component: Cadastro
+            }
+        ];
+    
+    Definindo as rotas no Vue Instance no main.js
+        import { routes } from './routes';
+        const router = new VueRouter({ routes });
+
+        new Vue({
+            el: '#app',
+            router,
+            render: h => h(App)
+        })
+
+    Definindo o componente router-view para carregamento das rotas
+        // arquivo App.vue
+        ...
+        <template>
+            <div class="container">
+                <router-view></router-view>
+            </div>
+        </template>
+        ...
+
+    Observação:
+        O import de algo com as chaves { } deve ser inserido se não for utilizado um export Default no arquivo no qual deseja-se importar.
+
+        Exemplo:
+            // arquivo routes.js
+            export const routes = [
+                {
+                    path: '',
+                    component: Home
+                },
+                {
+                    path: '/cadastro',
+                    component: Cadastro
+                }
+            ];
+
+            import { routes } from './routes'; // CORRETO
+            import routes from './routes'; // ERRADO
+    
+
+    Para remoção do '#' nas rotas é necessário fazer com que o servidor sempre retorne o index.html, independente da url que está sendo acessada.
+    Como o 'servidor' foi criado pelo vue-cli, ele é configurado para isso. (?)
+
+        const router = new VueRouter({ 
+            routes,
+            mode: 'history' // history do navegador
+        });
+
+    Após configurar as rotas, os links de acesso a essas rotas podem ser definidos como:
+        <router-link to="/">Home</router-link>
+        <router-link to="/cadastro">Cadastro</router-link>
+
+# Eventos Customizados
+    Emissão de eventos de componentes filho para o pai
+        // Elemento filho
+            <button class="botao botao-padrao" :type="tipo" @click="disparaAcao()">{{ rotulo }}</button>
+
+            <script>
+                export default {
+                    methods: {
+                        disparaAcao() {
+                            this.$emit('acaoAposClickBotao');
+                        }
+                    }
+                }
+            </script>
+        
+        // Elemento pai
+            <meu-botao tipo="button" rotulo="Remover" @acaoAposClickBotao="removeFoto(foto)"></meu-botao>
+
+            <script>
+                export default {
+                    methods: {
+                        removeFoto(foto) {
+                            const indice = this.fotos.indexOf(foto);
+                            this.fotos.splice(indice, 1);
+                        }	
+                    }
+                }
+            </script>
+        
+        Observação: se fosse necessário enviar alguma dado para o elemento pai, o mesmo seria recebido (no elemento pai como o(s) primeiro(s) parâmetro(s))
+            // Elemento filho
+            this.$emit('acaoAposClickBotao', 'dado a ser enviado');
+
+            // Elemento pai
+            <meu-botao tipo="button" rotulo="Remover" @acaoAposClickBotao="removeFoto($event, foto)"></meu-botao>
+            removeFoto(event, foto) {
+                // todo
+            }
